@@ -20,7 +20,7 @@ if [[ -z ${GIT_EMAIL} ]]; then
     read -r EMAIL
     git config --global user.email "${EMAIL}"
 fi
-git config --global core.editpr "nano"
+git config --global core.editor "nano"
 git config --global credential.helper "cache --timeout=7200"
 echo "git identity setup successfully!"
 
