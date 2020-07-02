@@ -24,15 +24,33 @@ if [[ $? -ne 0 ]]; then
    sudo swapon /swapfile
    sudo cp /etc/fstab /etc/fstab.bak
    echo "/swapfile none swap sw 0 0" >> /etc/fstab
-
-   echo "tuning swap"
-   sudo sysctl vm.swappiness=30
-   echo "vm.swappiness=30" >> /etc/sysctl.conf
-   sudo sysctl vm.vfs_cache_pressure=50
-   echo "vm.vfs_cache_pressure=50" >> /etc/sysctl.conf
 else
-   echo "swapfile found. No changes made."
+   echo "swapfile found"
+   read -p "do you want to replace the current swap? [y/N]" PROMPT
+   if [[ $PROMPT =~ [yY](es)* ]]; then
+      echo "overwriting swap"
+      sudo swapoff /swapfile
+      if [[ -z $SIZE ]]; then
+         echo "swap size empty, overwrite with 1G"
+         sudo fallocate -l 1G /swapfile
+      else
+         echo "overwrite swap and changes to ${SIZE}G"
+         sudo fallocate -l ${SIZE}G /swapfile
+      fi
+      sudo mkswap /swapfile
+      sudo swapon /swapfile
+   else
+      echo "skip overwriting swap"
+   fi
 fi
+
+echo ""
+echo "tuning swap"
+sudo sysctl vm.swappiness=30
+echo "vm.swappiness=30" >> /etc/sysctl.conf
+sudo sysctl vm.vfs_cache_pressure=50
+echo "vm.vfs_cache_pressure=50" >> /etc/sysctl.conf
+echo ""
 
 # output results to terminal
 cat /proc/swaps
