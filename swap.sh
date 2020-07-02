@@ -10,7 +10,7 @@ grep -q "swapfile" /etc/fstab
 # if not then create it
 if [[ $? -ne 0 ]]; then
    echo "swapfile not found. Adding swapfile."
-   sudo fallocate -l ${SIZE}M /swapfile
+   sudo fallocate -l ${SIZE}G /swapfile
    sudo chmod 600 /swapfile
    sudo mkswap /swapfile
    sudo swapon /swapfile
