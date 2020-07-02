@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-# size of swapfile in megabytes
+echo ""
+echo "size of swapfile in gigabytes"
+echo "default swapfile 1G"
 echo "Enter Swap Size : "
 read -r SIZE
 
@@ -10,7 +12,11 @@ grep -q "swapfile" /etc/fstab
 # if not then create it
 if [[ $? -ne 0 ]]; then
    echo "swapfile not found. Adding swapfile."
-   sudo fallocate -l ${SIZE}G /swapfile
+   if [[ -z $SIZE ]]; then
+      sudo fallocate -l 1G /swapfile
+   else
+      sudo fallocate -l ${SIZE}G /swapfile
+   fi
    sudo chmod 600 /swapfile
    sudo mkswap /swapfile
    sudo swapon /swapfile
