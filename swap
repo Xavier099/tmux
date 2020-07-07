@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+function echo() {
+    command echo -e "${@}"
+}
+
+function help_menu() {
+    echo
+    echo "${BOLD}SWAP MANAGER${RST}"
+    echo
+    echo "${BOLD}USAGE:${RST} ${0} <options>"
+    echo
+    echo "${BOLD}EXAMPLE:${RST} ${0} -a"
+    echo
+    echo "${BOLD}EXAMPLE:${RST} ${0} --add 6"
+    echo
+    echo " -a | --add:        Add Swap"
+    echo "                    Possible values: 1, 2, 4, 6 or cust/custom."
+    echo "                    You can use Megabytes as value e.g 1024"
+    echo " -c | --check:      Check swap"
+    echo " -d | --disable:    Disable swap"
+    echo " -e | --enable:     Enable swap"
+    echo " -h | --help:       Help menu"
+    echo " -r | --replace:    Replace current swap"
+    echo
+}
+
+function setup_variables() {
+    BOLD="\033[1m"
+    RST="\033[0m"
+}
+
+function enable() {
+    echo
+    sudo swapon /swapfile
+}
+
+function disable() {
+    echo
+    sudo swapoff /swapfile
+}
+
+function custom_swap() {
+    read -r -p "Do you want change swap size? [y/N]" PROMPT
+    if [[ $PROMPT =~ [yY](es)* ]]; then
+       echo "Enter swap size : "
+       read -r SIZE
+       addswap
+    else
+       addswap
+    fi
+}
+
+function addswap() {
+    CHK=$(grep -q "swapfile" /etc/fstab)
+    if ! "${CHK}"; then
+       echo "swapfile not found. Adding swapfile."
+        if [[ -z $SIZE ]]; then
+           echo
+           echo "Add 1G swap"
+           sudo fallocate -l 1G /swapfile
+        else
+           echo "Add ${SIZE}G swap"
+           sudo fallocate -l "${SIZE}"G /swapfile
+        fi
+       sudo chmod 600 /swapfile
+       sudo mkswap /swapfile
+       sudo swapon /swapfile
+       sudo cp /etc/fstab /etc/fstab.bak
+       echo "/swapfile none swap sw 0 0" >> /etc/fstab
+    else
+       replace_swap
+    fi
+    tuning_swap
+}
+
+function replace_swap() {
+     read -r -p "are you sure want to replace the current swap? [y/N]" PROMPT
+     if [[ $PROMPT =~ [yY](es)* ]]; then
+        custom_swap
+        echo "overwriting swap"
+        sudo swapoff /swapfile
+        echo "changing current swap to ${SIZE}G swap"
+        sudo fallocate -l "${SIZE}"G /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+     fi
+}
+
+function result() {
+    echo
+    < /proc/meminfo grep Swap
+    echo
+}
+
+function tuning_swap() {
+    echo
+    echo "tuning swap"
+    sudo sysctl vm.swappiness=30
+    echo "vm.swappiness=30" >> /etc/sysctl.conf
+    sudo sysctl vm.vfs_cache_pressure=50
+    echo "vm.vfs_cache_pressure=50" >> /etc/sysctl.conf
+    echo
+}
+
+function parameters() {
+    case "${1}" in
+        "-a"|"--add") custom_swap ;;
+        "-c"|"--check") result ;;
+        "-d"|"--disable") disable ;;
+        "-e"|"--enable") enable ;;
+        "-r"|"--replace") replace_swap ;;
+        "-h"|"--help"|*) help_menu ;;
+    esac
+}
+
+setup_variables
+parameters "${@}"
