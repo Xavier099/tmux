@@ -12,7 +12,7 @@ function help_menu() {
     echo
     echo "${BOLD}EXAMPLE:${RST} ${0} -a"
     echo
-    echo "${BOLD}EXAMPLE:${RST} ${0} --add 6"
+    echo "${BOLD}EXAMPLE:${RST} ${0} --add"
     echo
     echo " -a | --add:        Add Swap"
     echo " -c | --check:      Check swap"
