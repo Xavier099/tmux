@@ -67,10 +67,10 @@ function addswap() {
        sudo swapon /swapfile
        sudo cp /etc/fstab /etc/fstab.bak
        echo "/swapfile none swap sw 0 0" >> /etc/fstab
+       tuning_swap
     else
        replace_swap
     fi
-    tuning_swap
 }
 
 function replace_swap() {
