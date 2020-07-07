@@ -68,7 +68,26 @@ function addswap() {
        echo "/swapfile none swap sw 0 0" >> /etc/fstab
        tuning_swap
     else
-       replace_swap
+       overwrite_swap
+    fi
+}
+
+function overwrite_swap() {
+    read -r -p "do you want replace current swap? [y/N]" PROMPT
+    if [[ $PROMPT =~ [yY](es)* ]]; then
+       echo "current swap will be replace to 1G or"
+       sudo swapoff /swapfile
+       if [[ -z $SIZE ]]; then
+          echo
+          echo "overwrite swap to 1G"
+          sudo fallocate -l 1G /swapfile
+       else
+          echo
+          echo "overwrite swap to ${SIZE}G"
+          sudo fallocate -l "${SIZE}"G /swapfile
+       fi
+       sudo mkswap /swapfile
+       sudo swapon /swapfile
     fi
 }
 
