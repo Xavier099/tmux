@@ -44,24 +44,23 @@ function custom_swap() {
     if [[ $PROMPT =~ [yY](es)* ]]; then
        echo "Enter swap size : "
        read -r SIZE
-       addswap
-    else
-       addswap
     fi
 }
 
 function addswap() {
+    custom_swap
     grep -q "swapfile" /etc/fstab
     if [[ $? -ne 0 ]]; then
        echo "swapfile not found. Adding swapfile."
-        if [[ -z $SIZE ]]; then
-           echo
-           echo "Add 1G swap"
-           sudo fallocate -l 1G /swapfile
-        else
-           echo "Add ${SIZE}G swap"
-           sudo fallocate -l "${SIZE}"G /swapfile
-        fi
+       if [[ -z $SIZE ]]; then
+          echo
+          echo "Add 1G swap"
+          sudo fallocate -l 1G /swapfile
+       else
+          echo
+          echo "Add ${SIZE}G swap"
+          sudo fallocate -l "${SIZE}"G /swapfile
+       fi
        sudo chmod 600 /swapfile
        sudo mkswap /swapfile
        sudo swapon /swapfile
@@ -74,16 +73,23 @@ function addswap() {
 }
 
 function replace_swap() {
-     read -r -p "are you sure want to replace the current swap? [y/N]" PROMPT
-     if [[ $PROMPT =~ [yY](es)* ]]; then
-        custom_swap
-        echo "overwriting swap"
-        sudo swapoff /swapfile
-        echo "changing current swap to ${SIZE}G swap"
-        sudo fallocate -l "${SIZE}"G /swapfile
-        sudo mkswap /swapfile
-        sudo swapon /swapfile
-     fi
+    read -r -p "do you want replace current swap? [y/N]" PROMPT
+    if [[ $PROMPT =~ [yY](es)* ]]; then
+       echo "current swap will be replace to 1G or"
+       custom_swap
+       sudo swapoff /swapfile
+       if [[ -z $SIZE ]]; then
+          echo
+          echo "overwrite swap to 1G"
+          sudo fallocate -l 1G /swapfile
+       else
+          echo
+          echo "overwrite swap to ${SIZE}G"
+          sudo fallocate -l "${SIZE}"G /swapfile
+       fi
+       sudo mkswap /swapfile
+       sudo swapon /swapfile
+    fi
 }
 
 function result() {
@@ -104,7 +110,7 @@ function tuning_swap() {
 
 function parameters() {
     case "${1}" in
-        "-a"|"--add") custom_swap ;;
+        "-a"|"--add") addswap ;;
         "-c"|"--check") result ;;
         "-d"|"--disable") disable ;;
         "-e"|"--enable") enable ;;
