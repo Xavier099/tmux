@@ -15,8 +15,6 @@ function help_menu() {
     echo "${BOLD}EXAMPLE:${RST} ${0} --add 6"
     echo
     echo " -a | --add:        Add Swap"
-    echo "                    Possible values: 1, 2, 4, 6 or cust/custom."
-    echo "                    You can use Megabytes as value e.g 1024"
     echo " -c | --check:      Check swap"
     echo " -d | --disable:    Disable swap"
     echo " -e | --enable:     Enable swap"
