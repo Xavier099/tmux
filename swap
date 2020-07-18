@@ -119,10 +119,10 @@ function result() {
 function tuning_swap() {
     echo
     echo "tuning swap"
-    sudo sysctl vm.swappiness=30
-    echo "vm.swappiness=30" >> /etc/sysctl.conf
-    sudo sysctl vm.vfs_cache_pressure=50
-    echo "vm.vfs_cache_pressure=50" >> /etc/sysctl.conf
+    sudo sysctl vm.swappiness=0
+    echo "vm.swappiness=0" >> /etc/sysctl.conf
+    sudo sysctl vm.overcommit_memory=1
+    echo "vm.overcommit_memory=1" >> /etc/sysctl.conf
     echo
 }
 
