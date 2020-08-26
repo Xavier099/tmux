@@ -39,6 +39,12 @@ function disable() {
     sudo swapoff -a
 }
 
+function diuripna() {
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    enable
+}
+
 function custom_swap() {
     read -r -p "Do you want change swap size? [y/N]" PROMPT
     if [[ $PROMPT =~ [yY](es)* ]]; then
@@ -61,9 +67,7 @@ function addswap() {
           echo "Add ${SIZE}G swap"
           sudo fallocate -l "${SIZE}"G /swapfile
        fi
-       sudo chmod 600 /swapfile
-       sudo mkswap /swapfile
-       sudo swapon /swapfile
+       diuripna
        sudo cp /etc/fstab /etc/fstab.bak
        echo "/swapfile none swap sw 0 0" >> /etc/fstab
        tuning_swap
@@ -75,7 +79,7 @@ function addswap() {
 function overwrite_swap() {
     read -r -p "do you want replace current swap? [y/N]" PROMPT
     if [[ $PROMPT =~ [yY](es)* ]]; then
-       sudo swapoff -a
+       disable
        if [[ -z $SIZE ]]; then
           echo
           echo "overwrite swap to 1G"
@@ -85,9 +89,7 @@ function overwrite_swap() {
           echo "overwrite swap to ${SIZE}G"
           sudo fallocate -l "${SIZE}"G /swapfile
        fi
-       sudo chmod 600 /swapfile
-       sudo mkswap /swapfile
-       sudo swapon /swapfile
+       diuripna
     fi
 }
 
