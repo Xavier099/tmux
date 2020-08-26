@@ -36,7 +36,7 @@ function enable() {
 
 function disable() {
     echo
-    sudo swapoff /swapfile
+    sudo swapoff -a
 }
 
 function custom_swap() {
