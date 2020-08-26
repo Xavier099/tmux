@@ -75,7 +75,7 @@ function addswap() {
 function overwrite_swap() {
     read -r -p "do you want replace current swap? [y/N]" PROMPT
     if [[ $PROMPT =~ [yY](es)* ]]; then
-       sudo swapoff /swapfile
+       sudo swapoff -a
        if [[ -z $SIZE ]]; then
           echo
           echo "overwrite swap to 1G"
@@ -85,6 +85,7 @@ function overwrite_swap() {
           echo "overwrite swap to ${SIZE}G"
           sudo fallocate -l "${SIZE}"G /swapfile
        fi
+       sudo chmod 600 /swapfile
        sudo mkswap /swapfile
        sudo swapon /swapfile
     fi
