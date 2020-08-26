@@ -99,7 +99,6 @@ function overwrite_swap() {
 function replace_swap() {
     read -r -p "do you want replace current swap? [y/N]" PROMPT
     if [[ $PROMPT =~ [yY](es)* ]]; then
-       echo "current swap will be replace to 1G or"
        custom_swap
        disable
        overwrite_cust_swap
