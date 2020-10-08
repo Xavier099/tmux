@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2181
 
 function echo() {
     command echo -e "${@}"
@@ -67,8 +66,7 @@ function custom_swap() {
 
 function addswap() {
     custom_swap
-    grep -q "swapfile" /etc/fstab
-    if [[ $? -ne 0 ]]; then
+    if ! grep -q "swapfile" /etc/fstab; then
        echo "swapfile not found. Adding swapfile."
        if [[ -z $SIZE ]]; then
           echo
